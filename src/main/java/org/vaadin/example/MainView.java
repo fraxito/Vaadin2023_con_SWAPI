@@ -1,6 +1,7 @@
 package org.vaadin.example;
 
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -41,29 +42,48 @@ public class MainView extends VerticalLayout {
      *            bean.
      */
     public MainView(@Autowired GreetService service) {
+        VerticalLayout pagina = new VerticalLayout();
         HorizontalLayout entradas = new HorizontalLayout();
         VerticalLayout resultados = new VerticalLayout();
+        VerticalLayout resultadosGrid = new VerticalLayout();
 
+        pagina.add(entradas, resultadosGrid);
         ComboBox<String> comboBox = new ComboBox<>("Browser");
         comboBox.setAllowCustomValue(false); //este deja que el usuario escriba lo que quiera en la caja del comboBox. Si se pone a false no deja
         comboBox.setItems("people", "planets", "starships");
         comboBox.setHelperText("Selecciona el tipo de petición");
 
-        // Use TextField for standard text input
+        Grid<CaracterSW> grid = new Grid<>(CaracterSW.class, false);
+        grid.addColumn(CaracterSW::getName).setHeader("NOMBRE");
+        grid.addColumn(CaracterSW::getHeight).setHeader("ALTURA");
+        grid.addColumn(CaracterSW::getMass).setHeader("PESO");
+        grid.addColumn(CaracterSW::getHair_color).setHeader("COLOR DE PELO");
+        grid.addColumn(CaracterSW::getEye_color).setHeader("COLOR DE OJOS");
+
 
         TextField pideId = new TextField("Id de consulta");
         pideId.addClassName("bordered");
-        entradas.add(comboBox, pideId);
+
         // Button click listeners can be defined as lambda expressions
         Button boton1 = new Button("Say hello", e -> {
             String tipo = comboBox.getValue();
             int id = Integer.parseInt(pideId.getValue());
             try {
-                System.out.println(service.getSWAPI(tipo, id));
+                resultados.removeAll();
+                resultados.add(service.getSWAPI(tipo, id));
             } catch (Exception ex) {
             }
         });
 
+        Button boton2 = new Button("Lee todos los personajes", e -> {
+            String tipo = comboBox.getValue();
+            try {
+                grid.setItems(service.getCaracterSWList(tipo));
+                resultadosGrid.add(grid);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+        });
         // Theme variants give you predefined extra styles for components.
         // Example: Primary button has a more prominent look.
         boton1.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -75,8 +95,8 @@ public class MainView extends VerticalLayout {
         // Use custom CSS classes to apply styling. This is defined in
         // styles.css.
         addClassName("centered-content");
-
-        add(entradas, boton1);
+        entradas.add(comboBox, pideId,boton1, boton2);
+        add(entradas,  resultados, resultadosGrid);
     }
 
 }

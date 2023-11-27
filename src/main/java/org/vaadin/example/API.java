@@ -25,4 +25,21 @@ public class API {
 
         return response.body();
     }
+
+    public String getCaracterSWList(String tipo) throws URISyntaxException, IOException, InterruptedException {
+        String fullUrl = String.format(urlPrefix, tipo, "");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI(fullUrl))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = HttpClient
+                .newBuilder()
+                .build()
+                .send(request, HttpResponse.BodyHandlers.ofString());
+
+
+        return response.body();
+    }
+
 }
