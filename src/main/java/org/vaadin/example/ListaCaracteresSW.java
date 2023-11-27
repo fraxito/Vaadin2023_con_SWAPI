@@ -3,6 +3,10 @@ package org.vaadin.example;
 import java.util.ArrayList;
 
 public class ListaCaracteresSW {
+    /** IMPORTANTE:
+     * LOS NOMBRES DE LAS PROPIEDADES TIENEN QUE SER LOS MISMOS
+     * QUE HAY EN EL JSON; NO TE LOS INVENTES!!!!
+     */
     private int count;
     private String next;
     private String prev;
